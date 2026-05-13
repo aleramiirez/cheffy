@@ -27,10 +27,17 @@ function AppInit() {
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="flex flex-col h-screen max-w-lg mx-auto bg-bg-main overflow-hidden">
+      {/*
+        Estructura de layout:
+        - h-[100dvh] usa dynamic viewport height (compatible con iOS Safari)
+        - flex flex-col garantiza que BottomNav siempre ocupa el fondo
+        - overflow-hidden en el contenedor raíz evita scroll global
+        - El scroll ocurre SOLO dentro de <main> (flex-1 overflow-y-auto)
+      */}
+      <div className="flex flex-col h-[100dvh] max-w-lg mx-auto bg-bg-main overflow-hidden">
         <AppInit />
-        {/* Área de contenido principal con scroll */}
-        <main className="flex-1 overflow-y-auto">
+        {/* Área de contenido — scroll contenido aquí, nunca desborda */}
+        <main className="flex-1 min-h-0 overflow-y-auto">
           <Routes>
             <Route path="/" element={<Lista />} />
             <Route path="/compra" element={<ModoCompra />} />
@@ -41,7 +48,7 @@ export default function App() {
           </Routes>
         </main>
 
-        {/* Navegación inferior fija */}
+        {/* Navegación inferior — SIEMPRE visible, nunca se desplaza */}
         <BottomNav />
       </div>
     </BrowserRouter>
