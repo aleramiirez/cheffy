@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #FAFAF7;
+    color: #1C1C1E;
+    overscroll-behavior: none;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-95 shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-primary font-semibold py-3 px-6 rounded-xl border border-primary/20 transition-all duration-200 active:scale-95;
+  }
+
+  .btn-danger {
+    @apply bg-red-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-95;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-card border border-gray-100;
+  }
+
+  .input-base {
+    @apply w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-text-main placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200;
+  }
+
+  .chip {
+    @apply px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer;
+  }
+
+  .chip-active {
+    @apply bg-primary text-white;
+  }
+
+  .chip-inactive {
+    @apply bg-gray-100 text-text-muted;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
