@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { INITIAL_ITEMS } from '../data/initialItems'
 
 // Categorías predefinidas (orden de supermercado)
 export const CATEGORIES = [
