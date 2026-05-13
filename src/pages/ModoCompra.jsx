@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Header from '../components/layout/Header'
 import useStore, { CATEGORIES } from '../store/useStore'
 import Toast from '../components/common/Toast'
 
@@ -60,7 +59,6 @@ export default function ModoCompra() {
   if (totalItems === 0) {
     return (
       <div className="flex flex-col h-full">
-        <Header title="Modo Compra" emoji="🛒" />
         <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
           <span className="text-7xl mb-6">🎉</span>
           <h2 className="text-xl font-bold text-text-main mb-2">¡Todo en orden!</h2>
@@ -77,27 +75,20 @@ export default function ModoCompra() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header
-        title="Modo Compra"
-        emoji="🛒"
-        rightAction={
-          <span className="text-sm font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
+      {/* Barra de progreso con contador integrado */}
+      <div className="px-4 pt-3 pb-3">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-xs font-semibold text-text-muted uppercase tracking-wide">Progreso</span>
+          <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
             {totalTachados}/{totalItems}
           </span>
-        }
-      />
-
-      {/* Barra de progreso */}
-      <div className="px-4 pb-3">
+        </div>
         <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
           <div
             className="h-full bg-primary rounded-full transition-all duration-500"
             style={{ width: `${progreso}%` }}
           />
         </div>
-        <p className="text-xs text-text-muted mt-1.5 text-right">
-          {totalTachados} de {totalItems} productos cogidos
-        </p>
       </div>
 
       {/* Lista de productos agrupados */}

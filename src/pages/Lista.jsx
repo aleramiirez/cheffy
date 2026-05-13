@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
-import Header from '../components/layout/Header'
 import useStore, { CATEGORIES } from '../store/useStore'
 import Modal from '../components/common/Modal'
 import Toast from '../components/common/Toast'
@@ -312,24 +311,12 @@ export default function Lista() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header
-        title="Mi Lista"
-        emoji="🛍️"
-        rightAction={
-          items.length > 0 && (
-            <span className="text-sm text-text-muted">
-              {items.filter((i) => i.enLista).length} pendientes
-            </span>
-          )
-        }
-      />
-
       {/* Buscador sticky */}
-      <div className="px-4 pb-3 sticky top-14 z-10 bg-bg-main">
+      <div className="px-4 pt-3 pb-2 sticky top-0 z-10 bg-bg-main">
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">🔍</span>
           <input
-            className="input-base pl-9 pr-10"
+            className="input-base pl-8 pr-9 py-2 text-sm"
             placeholder="Buscar o añadir producto..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}

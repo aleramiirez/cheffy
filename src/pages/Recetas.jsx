@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Header from '../components/layout/Header'
 import useStore from '../store/useStore'
 import Toast from '../components/common/Toast'
 
@@ -269,6 +268,15 @@ function TabDescubrir({ onVerDetalle }) {
         </div>
       )}
 
+      {/* FAB Nueva Receta */}
+      <button
+        onClick={() => navigate('/recetas/nueva')}
+        className="fixed bottom-20 right-4 w-14 h-14 bg-primary text-white rounded-full shadow-fab flex items-center justify-center text-2xl transition-transform active:scale-95 hover:bg-primary-light z-20"
+        aria-label="Nueva receta"
+      >
+        ➕
+      </button>
+
       <Toast message={toast.message} visible={toast.visible} onHide={() => setToast({ ...toast, visible: false })} />
     </div>
   )
@@ -353,21 +361,8 @@ export default function Recetas() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header
-        title="Recetas"
-        emoji="🍳"
-        rightAction={
-          <button
-            onClick={() => navigate('/recetas/nueva')}
-            className="flex items-center gap-1.5 bg-primary text-white text-sm font-semibold px-3 py-2 rounded-xl active:scale-95 transition-transform"
-          >
-            <span>➕</span> Nueva
-          </button>
-        }
-      />
-
       {/* Tabs internos */}
-      <div className="flex gap-1 px-4 pb-3">
+      <div className="flex gap-1 px-4 pt-3 pb-3">
         {[
           { key: 'descubrir', label: '🌍 Descubrir' },
           { key: 'mis-recetas', label: '📖 Mis Recetas' },
