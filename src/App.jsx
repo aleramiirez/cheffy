@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import BottomNav from './components/layout/BottomNav'
 import Lista from './pages/Lista'
 import ModoCompra from './pages/ModoCompra'
+import Despensa from './pages/Despensa'
 import Recetas from './pages/Recetas'
 import FormReceta from './pages/FormReceta'
 import useStore from './store/useStore'
@@ -41,6 +42,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Lista />} />
             <Route path="/compra" element={<ModoCompra />} />
+            <Route path="/despensa" element={<Despensa />} />
             <Route path="/recetas" element={<Recetas />} />
             <Route path="/recetas/nueva" element={<FormReceta />} />
             <Route path="/recetas/editar/:id" element={<FormReceta />} />

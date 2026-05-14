@@ -309,7 +309,6 @@ export default function Lista() {
   const { itemsFiltrados, hayResultadoExacto } = useMemo(() => {
     let filtered = items
     if (filtro === 'falta') filtered = filtered.filter((i) => i.enLista)
-    else if (filtro === 'tengo') filtered = filtered.filter((i) => i.tengo && !i.enLista)
     if (busqueda.trim()) {
       const q = normalizar(busqueda.trim())
       filtered = filtered.filter((i) => normalizar(i.nombre).includes(q))
@@ -367,7 +366,6 @@ export default function Lista() {
         {[
           { key: 'todos', label: 'Todos', count: items.length },
           { key: 'falta', label: 'Me falta', count: items.filter((i) => i.enLista).length },
-          { key: 'tengo', label: 'Tengo', count: items.filter((i) => i.tengo && !i.enLista).length },
         ].map((f) => (
           <button
             key={f.key}

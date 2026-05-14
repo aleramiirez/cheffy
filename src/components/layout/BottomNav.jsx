@@ -4,6 +4,7 @@ import useStore from '../../store/useStore'
 const tabs = [
   { to: '/', icon: '🛍️', label: 'Lista' },
   { to: '/compra', icon: '🛒', label: 'Compra' },
+  { to: '/despensa', icon: '🏠', label: 'Despensa' },
   { to: '/recetas', icon: '🍳', label: 'Recetas' },
 ]
 
