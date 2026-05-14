@@ -6,6 +6,7 @@ import ModoCompra from './pages/ModoCompra'
 import Despensa from './pages/Despensa'
 import Recetas from './pages/Recetas'
 import FormReceta from './pages/FormReceta'
+import FormPlato from './pages/FormPlato'
 import useStore from './store/useStore'
 import { INITIAL_ITEMS } from './data/initialItems'
 
@@ -46,6 +47,8 @@ export default function App() {
             <Route path="/recetas" element={<Recetas />} />
             <Route path="/recetas/nueva" element={<FormReceta />} />
             <Route path="/recetas/editar/:id" element={<FormReceta />} />
+            <Route path="/platos/nuevo" element={<FormPlato />} />
+            <Route path="/platos/editar/:id" element={<FormPlato />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

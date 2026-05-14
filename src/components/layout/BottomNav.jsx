@@ -14,7 +14,7 @@ export default function BottomNav() {
   const itemsFaltantes = items.filter((i) => i.enLista).length
 
   // Ocultar BottomNav en pantallas de formulario de receta
-  const hideOn = ['/recetas/nueva', '/recetas/editar']
+  const hideOn = ['/recetas/nueva', '/recetas/editar', '/platos/nuevo', '/platos/editar']
   const shouldHide = hideOn.some((path) => location.pathname.startsWith(path))
   if (shouldHide) return null
 

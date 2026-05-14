@@ -22,6 +22,7 @@ const useStore = create(
     (set, get) => ({
       items: [],
       recipes: [],
+      platos: [],
       itemsTachados: [],
 
       // Items
@@ -129,12 +130,35 @@ const useStore = create(
       isRecetaGuardada: (id) => {
         return get().recipes.some((r) => r.id === id)
       },
+
+      // Platos
+      addPlato: (platoData) => {
+        const newPlato = {
+          id: crypto.randomUUID(),
+          creadoEn: Date.now(),
+          emoji: '🍽️',
+          ...platoData,
+        }
+        set((state) => ({ platos: [...state.platos, newPlato] }))
+        return newPlato.id
+      },
+
+      removePlato: (id) => {
+        set((state) => ({ platos: state.platos.filter((p) => p.id !== id) }))
+      },
+
+      updatePlato: (id, changes) => {
+        set((state) => ({
+          platos: state.platos.map((p) => p.id === id ? { ...p, ...changes } : p),
+        }))
+      },
     }),
     {
       name: 'mi-cocina-storage',
       partialize: (state) => ({
         items: state.items,
         recipes: state.recipes,
+        platos: state.platos,
         // itemsTachados NO se persiste (sesión temporal)
       }),
     }

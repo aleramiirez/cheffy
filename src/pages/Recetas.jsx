@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useStore from '../store/useStore'
 import Toast from '../components/common/Toast'
+import MisPlatos from './MisPlatos'
 
 function parseMealDBReceta(meal) {
   const ingredientes = []
@@ -365,7 +366,8 @@ export default function Recetas() {
       <div className="flex gap-1 px-4 pt-3 pb-3">
         {[
           { key: 'descubrir', label: '🌍 Descubrir' },
-          { key: 'mis-recetas', label: '📖 Mis Recetas' },
+          { key: 'mis-platos', label: '🍽️ Mis Platos' },
+          { key: 'mis-recetas', label: '📖 Recetas' },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -382,11 +384,9 @@ export default function Recetas() {
       </div>
 
       {/* Contenido del tab */}
-      {tabActivo === 'descubrir' ? (
-        <TabDescubrir onVerDetalle={setRecetaDetalle} />
-      ) : (
-        <TabMisRecetas onVerDetalle={setRecetaDetalle} />
-      )}
+      {tabActivo === 'descubrir' && <TabDescubrir onVerDetalle={setRecetaDetalle} />}
+      {tabActivo === 'mis-platos' && <MisPlatos />}
+      {tabActivo === 'mis-recetas' && <TabMisRecetas onVerDetalle={setRecetaDetalle} />}
 
       {/* Vista detalle */}
       {recetaDetalle && (
