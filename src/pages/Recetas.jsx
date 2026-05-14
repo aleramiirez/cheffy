@@ -370,11 +370,11 @@ export default function Recetas() {
           <button
             key={tab.key}
             onClick={() => setTabActivo(tab.key)}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-              tabActivo === tab.key
-                ? 'bg-primary text-white'
-                : 'bg-gray-100 text-text-muted'
-            }`}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200"
+            style={tabActivo === tab.key
+              ? { backgroundColor: 'var(--color-primary)', color: 'var(--color-bg-main)' }
+              : { backgroundColor: 'color-mix(in srgb, var(--color-text-muted) 12%, transparent)', color: 'var(--color-text-muted)' }
+            }
           >
             {tab.label}
           </button>

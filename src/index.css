@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── CSS Variables por tema ─────────────────────────────────────────────── */
+:root {
+  --color-bg-main: #FAF7F2;
+  --color-bg-card: #FFFFFF;
+  --color-primary: #C45C26;
+  --color-primary-light: #D97842;
+  --color-accent: #E8A87C;
+  --color-text-main: #2C2416;
+  --color-text-muted: #8B7355;
+  --color-border: #E8DFD0;
+  --color-nav-bg: #FFFFFF;
+}
+
 @layer base {
   html {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -10,9 +23,10 @@
   }
 
   body {
-    background-color: #FAFAF7;
-    color: #1C1C1E;
+    background-color: var(--color-bg-main);
+    color: var(--color-text-main);
     overscroll-behavior: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   * {
@@ -22,11 +36,19 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-primary text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-95 shadow-sm;
+    @apply font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-95 shadow-sm;
+    background-color: var(--color-primary);
+    color: var(--color-bg-main);
+  }
+  .btn-primary:hover {
+    background-color: var(--color-primary-light);
   }
 
   .btn-secondary {
-    @apply bg-white text-primary font-semibold py-3 px-6 rounded-xl border border-primary/20 transition-all duration-200 active:scale-95;
+    @apply font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-95;
+    background-color: var(--color-bg-card);
+    color: var(--color-primary);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
   }
 
   .btn-danger {
@@ -34,11 +56,24 @@
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-card border border-gray-100;
+    @apply rounded-xl;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.08);
   }
 
   .input-base {
-    @apply w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-text-main placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200;
+    @apply w-full rounded-xl px-4 py-3 focus:outline-none transition-all duration-200;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-main);
+  }
+  .input-base::placeholder {
+    color: var(--color-text-muted);
+  }
+  .input-base:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent);
   }
 
   .chip {
@@ -46,11 +81,13 @@
   }
 
   .chip-active {
-    @apply bg-primary text-white;
+    color: var(--color-bg-main);
+    background-color: var(--color-primary);
   }
 
   .chip-inactive {
-    @apply bg-gray-100 text-text-muted;
+    background-color: color-mix(in srgb, var(--color-text-muted) 12%, transparent);
+    color: var(--color-text-muted);
   }
 }
 
@@ -71,4 +108,14 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Utilities para usar variables CSS como clases */
+  .bg-theme-main { background-color: var(--color-bg-main); }
+  .bg-theme-card { background-color: var(--color-bg-card); }
+  .bg-theme-primary { background-color: var(--color-primary); }
+  .bg-theme-nav { background-color: var(--color-nav-bg); }
+  .text-theme-main { color: var(--color-text-main); }
+  .text-theme-muted { color: var(--color-text-muted); }
+  .text-theme-primary { color: var(--color-primary); }
+  .border-theme { border-color: var(--color-border); }
 }

@@ -34,7 +34,7 @@ export default function App() {
         - overflow-hidden en el contenedor raíz evita scroll global
         - El scroll ocurre SOLO dentro de <main> (flex-1 overflow-y-auto)
       */}
-      <div className="flex flex-col h-[100dvh] max-w-lg mx-auto bg-bg-main overflow-hidden">
+      <div className="flex flex-col h-[100dvh] max-w-lg mx-auto overflow-hidden bg-bg-main">
         <AppInit />
         {/* Área de contenido — scroll contenido aquí, nunca desborda */}
         <main className="flex-1 min-h-0 overflow-y-auto">
