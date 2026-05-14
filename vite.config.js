@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icons/*.png'],
       manifest: {
-        name: 'Mi Cocina',
-        short_name: 'Mi Cocina',
+        name: 'Cheffy',
+        short_name: 'Cheffy',
         description: 'Tu lista de la compra y recetas en un solo lugar',
         start_url: '/',
         display: 'standalone',
@@ -19,13 +19,13 @@ export default defineConfig({
         orientation: 'portrait',
         icons: [
           {
-            src: '/icons/icon-192x192.png',
+            src: '/icons/logo-cheffy.png',
             sizes: '192x192',
             type: 'image/png',
-            purpose: 'any maskable',
+            purpose: 'any',
           },
           {
-            src: '/icons/icon-512x512.png',
+            src: '/icons/logo-cheffy.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable',

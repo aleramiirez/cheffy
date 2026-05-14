@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import useStore, { CATEGORIES } from '../store/useStore'
 import Modal from '../components/common/Modal'
 import Toast from '../components/common/Toast'
@@ -230,8 +230,13 @@ function ItemRow({ item, onEdit, onDelete }) {
 }
 
 // ─── Grupo de categoría colapsable ───────────────────────────────────────────
-function CategoriaGroup({ categoria, items, onEdit, onDelete }) {
-  const [expanded, setExpanded] = useState(true)
+function CategoriaGroup({ categoria, items, onEdit, onDelete, autoExpand }) {
+  const [expanded, setExpanded] = useState(false)
+
+  // Si hay búsqueda activa, abrir automáticamente
+  useEffect(() => {
+    if (autoExpand) setExpanded(true)
+  }, [autoExpand])
 
   return (
     <div className="mb-2 bg-white rounded-xl overflow-hidden shadow-card border border-gray-100">
@@ -265,6 +270,23 @@ export default function Lista() {
   const [itemEditar, setItemEditar] = useState(null)
   const [nombreModal, setNombreModal] = useState('')
   const [toast, setToast] = useState({ visible: false, message: '' })
+  const [chipsVisible, setChipsVisible] = useState(true)
+  const lastScrollY = useRef(0)
+  const scrollContainerRef = useRef(null)
+
+  const handleScroll = useCallback(() => {
+    const el = scrollContainerRef.current
+    if (!el) return
+    const currentY = el.scrollTop
+    if (currentY < 10) {
+      setChipsVisible(true)
+    } else if (currentY > lastScrollY.current + 5) {
+      setChipsVisible(false) // scrolling down
+    } else if (currentY < lastScrollY.current - 5) {
+      setChipsVisible(true) // scrolling up
+    }
+    lastScrollY.current = currentY
+  }, [])
 
   const showToast = (message) => setToast({ visible: true, message })
 
@@ -337,7 +359,10 @@ export default function Lista() {
         )}
       </div>
 
-      {/* Chips de filtro */}
+      {/* Chips de filtro — se ocultan al hacer scroll hacia abajo */}
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+        chipsVisible ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0'
+      }`}>
       <div className="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
         {[
           { key: 'todos', label: 'Todos', count: items.length },
@@ -356,9 +381,10 @@ export default function Lista() {
           </button>
         ))}
       </div>
+      </div>
 
       {/* Lista */}
-      <div className="flex-1 overflow-y-auto px-4 pb-20">
+      <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 pb-20">
         {grupos.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full py-16 text-center">
             {items.length === 0 ? (
@@ -384,6 +410,7 @@ export default function Lista() {
               items={catItems}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              autoExpand={Boolean(busqueda.trim())}
             />
           ))
         )}
