@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import useStore from '../store/useStore'
+import EmojiPickerField from '../components/common/EmojiPickerField'
 
 function normalizar(str) {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -86,19 +87,7 @@ export default function FormPlato() {
           />
         </div>
 
-        {/* Emoji */}
-        <div>
-          <label className="block text-sm font-semibold mb-1.5" style={{ color: 'var(--color-text-main)' }}>
-            Emoji
-          </label>
-          <input
-            className="input-base text-xl"
-            placeholder="🍽️"
-            value={emoji}
-            onChange={(e) => setEmoji(e.target.value)}
-            maxLength={4}
-          />
-        </div>
+        <EmojiPickerField value={emoji} onChange={setEmoji} label="Emoji del plato" />
 
         {/* Ingredientes */}
         <div>

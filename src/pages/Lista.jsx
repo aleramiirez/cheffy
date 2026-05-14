@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import useStore, { CATEGORIES } from '../store/useStore'
 import Modal from '../components/common/Modal'
 import Toast from '../components/common/Toast'
+import EmojiPickerField from '../components/common/EmojiPickerField'
 
 function normalizar(str) {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -80,16 +81,7 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
           {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-text-main mb-1.5">Emoji (opcional)</label>
-          <input
-            className="input-base text-xl"
-            placeholder="📦"
-            value={emoji}
-            onChange={(e) => setEmoji(e.target.value)}
-            maxLength={4}
-          />
-        </div>
+        <EmojiPickerField value={emoji} onChange={setEmoji} label="Emoji" />
 
         <div>
           <label className="block text-sm font-medium text-text-main mb-2">
