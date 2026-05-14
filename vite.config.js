@@ -20,15 +20,15 @@ export default defineConfig({
         icons: [
           {
             src: '/icons/logo-cheffy.png',
-            sizes: '192x192',
+            sizes: 'any',
             type: 'image/png',
             purpose: 'any',
           },
           {
             src: '/icons/logo-cheffy.png',
-            sizes: '512x512',
+            sizes: 'any',
             type: 'image/png',
-            purpose: 'any maskable',
+            purpose: 'maskable',
           },
         ],
       },
