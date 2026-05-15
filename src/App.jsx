@@ -7,55 +7,79 @@ import Despensa from './pages/Despensa'
 import Recetas from './pages/Recetas'
 import FormReceta from './pages/FormReceta'
 import FormPlato from './pages/FormPlato'
+import Login from './pages/Login'
 import useStore from './store/useStore'
+import useAuthStore from './store/useAuthStore'
 import { INITIAL_ITEMS } from './data/initialItems'
 
 function AppInit() {
+  const { user } = useAuthStore()
   const items = useStore((s) => s.items)
   const addItem = useStore((s) => s.addItem)
+  const loadFromSupabase = useStore((s) => s.loadFromSupabase)
 
   useEffect(() => {
-    // Solo si es la primera vez (sin items en localStorage)
-    if (items.length === 0) {
+    if (user) {
+      // Usuario autenticado: cargar datos desde Supabase
+      loadFromSupabase(user.id)
+    } else if (items.length === 0) {
+      // Sin usuario: usar datos iniciales (modo offline/demo)
       INITIAL_ITEMS.forEach((item) => {
         addItem(item.nombre, item.categoriaId, item.emoji)
       })
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return null
 }
 
+function AuthLoader({ children }) {
+  const { init, loading, user } = useAuthStore()
+
+  useEffect(() => { init() }, [])
+
+  if (loading) {
+    return (
+      <div className="flex h-[100dvh] items-center justify-center bg-bg-main">
+        <div className="text-center">
+          <img src="/icons/icon-192x192.png" alt="Cheffy" className="w-16 h-16 mx-auto rounded-2xl mb-3 object-contain" />
+          <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Cargando...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return children
+}
+
 export default function App() {
+  const { user } = useAuthStore()
+
   return (
     <BrowserRouter>
-      {/*
-        Estructura de layout:
-        - h-[100dvh] usa dynamic viewport height (compatible con iOS Safari)
-        - flex flex-col garantiza que BottomNav siempre ocupa el fondo
-        - overflow-hidden en el contenedor raíz evita scroll global
-        - El scroll ocurre SOLO dentro de <main> (flex-1 overflow-y-auto)
-      */}
-      <div className="flex flex-col h-[100dvh] max-w-lg mx-auto overflow-hidden bg-bg-main">
-        <AppInit />
-        {/* Área de contenido — scroll contenido aquí, nunca desborda */}
-        <main className="flex-1 min-h-0 overflow-y-auto">
-          <Routes>
-            <Route path="/" element={<Lista />} />
-            <Route path="/compra" element={<ModoCompra />} />
-            <Route path="/despensa" element={<Despensa />} />
-            <Route path="/recetas" element={<Recetas />} />
-            <Route path="/recetas/nueva" element={<FormReceta />} />
-            <Route path="/recetas/editar/:id" element={<FormReceta />} />
-            <Route path="/platos/nuevo" element={<FormPlato />} />
-            <Route path="/platos/editar/:id" element={<FormPlato />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-
-        {/* Navegación inferior — SIEMPRE visible, nunca se desplaza */}
-        <BottomNav />
-      </div>
+      <AuthLoader>
+        {!user ? (
+          <Login />
+        ) : (
+          <div className="flex flex-col h-[100dvh] max-w-lg mx-auto overflow-hidden bg-bg-main">
+            <AppInit />
+            <main className="flex-1 min-h-0 overflow-y-auto">
+              <Routes>
+                <Route path="/" element={<Lista />} />
+                <Route path="/compra" element={<ModoCompra />} />
+                <Route path="/despensa" element={<Despensa />} />
+                <Route path="/recetas" element={<Recetas />} />
+                <Route path="/recetas/nueva" element={<FormReceta />} />
+                <Route path="/recetas/editar/:id" element={<FormReceta />} />
+                <Route path="/platos/nuevo" element={<FormPlato />} />
+                <Route path="/platos/editar/:id" element={<FormPlato />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </main>
+            <BottomNav />
+          </div>
+        )}
+      </AuthLoader>
     </BrowserRouter>
   )
 }
