@@ -1,22 +1,25 @@
 import { create } from 'zustand'
-import { supabase } from '../lib/supabase'
+import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
-const useAuthStore = create((set, get) => ({
+const useAuthStore = create((set) => ({
   user: null,
   loading: true,
   error: null,
+  configError: !isSupabaseConfigured,
 
-  // Inicializar: obtener sesión actual y suscribirse a cambios
   init: async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    set({ user: session?.user ?? null, loading: false })
+    if (!isSupabaseConfigured || !supabase) {
+      set({ loading: false, configError: true })
+      return
+    }
+    const { data } = await supabase.auth.getSession()
+    set({ user: data.session?.user ?? null, loading: false })
 
     supabase.auth.onAuthStateChange((_event, session) => {
       set({ user: session?.user ?? null, loading: false })
     })
   },
 
-  // Login con email + contraseña
   loginWithEmail: async (email, password) => {
     set({ error: null })
     const { error } = await supabase.auth.signInWithPassword({ email, password })
@@ -24,7 +27,6 @@ const useAuthStore = create((set, get) => ({
     return { error }
   },
 
-  // Registro con email + contraseña
   registerWithEmail: async (email, password) => {
     set({ error: null })
     const { error } = await supabase.auth.signUp({ email, password })
@@ -32,19 +34,15 @@ const useAuthStore = create((set, get) => ({
     return { error }
   },
 
-  // Login con Google
   loginWithGoogle: async () => {
     set({ error: null })
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: window.location.origin,
-      },
+      options: { redirectTo: window.location.origin },
     })
     if (error) set({ error: error.message })
   },
 
-  // Cerrar sesión
   logout: async () => {
     await supabase.auth.signOut()
     set({ user: null })

@@ -2,7 +2,26 @@ import { useState, useEffect } from 'react'
 import useAuthStore from '../store/useAuthStore'
 
 export default function Login() {
-  const { loginWithEmail, registerWithEmail, loginWithGoogle, error, clearError, loading } = useAuthStore()
+  const { loginWithEmail, registerWithEmail, loginWithGoogle, error, clearError, loading, configError } = useAuthStore()
+
+  if (configError) {
+    return (
+      <div className="flex flex-col h-[100dvh] items-center justify-center px-8 text-center bg-bg-main">
+        <span className="text-6xl mb-4">⚙️</span>
+        <h2 className="text-xl font-bold mb-3" style={{ color: 'var(--color-text-main)' }}>
+          Configuración pendiente
+        </h2>
+        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
+          Para usar Cheffy necesitas añadir las variables de entorno en Netlify.
+        </p>
+        <div className="text-left bg-white rounded-xl p-4 w-full text-xs font-mono border" style={{ borderColor: 'var(--color-border)' }}>
+          <p className="font-semibold mb-2" style={{ color: 'var(--color-text-main)' }}>En Netlify → Site settings → Environment variables:</p>
+          <p style={{ color: 'var(--color-primary)' }}>VITE_SUPABASE_URL</p>
+          <p style={{ color: 'var(--color-primary)' }}>VITE_SUPABASE_ANON_KEY</p>
+        </div>
+      </div>
+    )
+  }
   const [modo, setModo] = useState('login') // 'login' | 'register'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
