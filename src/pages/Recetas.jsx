@@ -272,10 +272,13 @@ function TabDescubrir({ onVerDetalle }) {
       {/* FAB Nueva Receta */}
       <button
         onClick={() => navigate('/recetas/nueva')}
-        className="fixed bottom-20 right-4 w-14 h-14 bg-primary text-white rounded-full shadow-fab flex items-center justify-center text-2xl transition-transform active:scale-95 hover:bg-primary-light z-20"
+        className="fixed bottom-20 right-4 w-14 h-14 rounded-full shadow-fab flex items-center justify-center transition-transform active:scale-95 z-20"
+        style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
         aria-label="Nueva receta"
       >
-        ➕
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
       </button>
 
       <Toast message={toast.message} visible={toast.visible} onHide={() => setToast({ ...toast, visible: false })} />

@@ -8,11 +8,63 @@ function normalizar(str) {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
+// ─── Bottom Sheet contextual para Editar/Eliminar ───────────────────────────
+function ItemActionSheet({ item, open, onClose, onEdit, onDelete }) {
+  if (!item) return null
+  return (
+    <div className={`fixed inset-0 z-50 transition-all duration-300 ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+      {/* Backdrop */}
+      <div
+        className={`absolute inset-0 bg-black/30 backdrop-blur-[2px] transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}
+        onClick={onClose}
+      />
+      {/* Sheet */}
+      <div className={`absolute bottom-0 left-0 right-0 max-w-lg mx-auto rounded-t-3xl transition-transform duration-300 ${open ? 'translate-y-0' : 'translate-y-full'}`}
+        style={{ backgroundColor: 'var(--color-bg-card)' }}>
+        {/* Handle */}
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 rounded-full" style={{ backgroundColor: 'var(--color-border)' }} />
+        </div>
+        {/* Item name */}
+        <div className="flex items-center gap-3 px-5 py-3 border-b" style={{ borderColor: 'var(--color-border)' }}>
+          <span className="text-2xl">{item.emoji}</span>
+          <span className="font-semibold truncate" style={{ color: 'var(--color-text-main)' }}>{item.nombre}</span>
+        </div>
+        {/* Actions */}
+        <div className="p-3 space-y-1 safe-bottom">
+          <button
+            onClick={() => { onClose(); onEdit(item) }}
+            className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl transition-colors active:scale-[0.98]"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--color-primary) 8%, transparent)' }}
+          >
+            <span className="text-xl w-8 text-center">✏️</span>
+            <span className="font-medium" style={{ color: 'var(--color-text-main)' }}>Editar producto</span>
+          </button>
+          <button
+            onClick={() => { onClose(); onDelete(item.id) }}
+            className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl transition-colors active:scale-[0.98]"
+            style={{ backgroundColor: 'rgba(239, 68, 68, 0.08)' }}
+          >
+            <span className="text-xl w-8 text-center">🗑️</span>
+            <span className="font-medium text-red-500">Eliminar producto</span>
+          </button>
+          <button
+            onClick={onClose}
+            className="w-full flex items-center justify-center gap-2 px-4 py-4 rounded-2xl font-semibold transition-colors"
+            style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Modal Añadir / Editar producto ──────────────────────────────────────────
 function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
   const { addItem, updateItem, toggleEnLista } = useStore()
   const esEdicion = Boolean(itemEditar)
-
   const [nombre, setNombre] = useState('')
   const [emoji, setEmoji] = useState('📦')
   const [categoriaId, setCategoriaId] = useState('otros')
@@ -22,40 +74,25 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
   useEffect(() => {
     if (open) {
       if (esEdicion) {
-        setNombre(itemEditar.nombre)
-        setEmoji(itemEditar.emoji)
-        setCategoriaId(itemEditar.categoriaId)
-        setEnLista(itemEditar.enLista)
+        setNombre(itemEditar.nombre); setEmoji(itemEditar.emoji)
+        setCategoriaId(itemEditar.categoriaId); setEnLista(itemEditar.enLista)
       } else {
-        setNombre(nombreInicial)
-        setEmoji('📦')
-        setCategoriaId('otros')
-        setEnLista(false)
+        setNombre(nombreInicial); setEmoji('📦'); setCategoriaId('otros'); setEnLista(false)
       }
       setError('')
     }
   }, [open, nombreInicial, itemEditar])
 
   const handleGuardar = () => {
-    if (nombre.trim().length < 2) {
-      setError('El nombre debe tener al menos 2 caracteres')
-      return
-    }
+    if (nombre.trim().length < 2) { setError('El nombre debe tener al menos 2 caracteres'); return }
     if (esEdicion) {
-      updateItem(itemEditar.id, {
-        nombre: nombre.trim(),
-        emoji: emoji || '📦',
-        categoriaId,
-        enLista,
-      })
+      updateItem(itemEditar.id, { nombre: nombre.trim(), emoji: emoji || '📦', categoriaId, enLista })
     } else {
       addItem(nombre.trim(), categoriaId, emoji || '📦')
       if (enLista) {
         setTimeout(() => {
           const newItems = useStore.getState().items
-          const created = newItems.find(
-            (i) => normalizar(i.nombre) === normalizar(nombre.trim()) && !i.enLista
-          )
+          const created = newItems.find((i) => normalizar(i.nombre) === normalizar(nombre.trim()) && !i.enLista)
           if (created) toggleEnLista(created.id)
         }, 0)
       }
@@ -95,14 +132,8 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
                   categoriaId === cat.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-gray-50'
                 }`}
               >
-                <input
-                  type="radio"
-                  name="categoria"
-                  value={cat.id}
-                  checked={categoriaId === cat.id}
-                  onChange={() => setCategoriaId(cat.id)}
-                  className="accent-primary"
-                />
+                <input type="radio" name="categoria" value={cat.id} checked={categoriaId === cat.id}
+                  onChange={() => setCategoriaId(cat.id)} className="accent-primary" />
                 <span className="text-lg">{cat.emoji}</span>
                 <span className="text-sm text-text-main">{cat.nombre}</span>
               </label>
@@ -112,12 +143,7 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
 
         {!esEdicion && (
           <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
-            <input
-              type="checkbox"
-              checked={enLista}
-              onChange={(e) => setEnLista(e.target.checked)}
-              className="w-5 h-5 accent-primary"
-            />
+            <input type="checkbox" checked={enLista} onChange={(e) => setEnLista(e.target.checked)} className="w-5 h-5 accent-primary" />
             <span className="text-sm font-medium text-text-main">Añadir a lista de compra</span>
           </label>
         )}
@@ -133,109 +159,63 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
   )
 }
 
-// ─── Item con swipe para editar/eliminar ─────────────────────────────────────
-function ItemRow({ item, onEdit, onDelete }) {
+// ─── Fila de item con Long Press ──────────────────────────────────────────────
+function ItemRow({ item, onLongPress }) {
   const toggleEnLista = useStore((s) => s.toggleEnLista)
-  const [offsetX, setOffsetX] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
-  const startXRef = useRef(null)
-  const ACTION_WIDTH = 130 // ancho total de los botones de acción
+  const longPressTimer = useRef(null)
+  const [pressing, setPressing] = useState(false)
 
-  const handleTouchStart = (e) => {
-    startXRef.current = e.touches[0].clientX
-    setIsDragging(true)
+  const startPress = (e) => {
+    // Solo long press en touch, no en clicks normales
+    setPressing(true)
+    longPressTimer.current = setTimeout(() => {
+      if (navigator.vibrate) navigator.vibrate(30)
+      onLongPress(item)
+      setPressing(false)
+    }, 500)
   }
 
-  const handleTouchMove = (e) => {
-    if (startXRef.current === null) return
-    const delta = e.touches[0].clientX - startXRef.current
-    if (delta < 0) {
-      setOffsetX(Math.max(delta, -ACTION_WIDTH))
-    } else if (offsetX < 0) {
-      setOffsetX(Math.min(0, offsetX + delta))
-    }
+  const cancelPress = () => {
+    clearTimeout(longPressTimer.current)
+    setPressing(false)
   }
-
-  const handleTouchEnd = () => {
-    setIsDragging(false)
-    startXRef.current = null
-    if (offsetX < -ACTION_WIDTH / 2) {
-      setOffsetX(-ACTION_WIDTH) // snap to open
-    } else {
-      setOffsetX(0) // snap closed
-    }
-  }
-
-  const closeSwipe = () => setOffsetX(0)
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Botones de acción detrás */}
-      <div className="absolute right-0 top-0 bottom-0 flex items-stretch" style={{ width: ACTION_WIDTH }}>
-        <button
-          onClick={() => { closeSwipe(); onEdit(item) }}
-          className="flex-1 bg-blue-500 flex flex-col items-center justify-center gap-1 text-white text-xs font-medium"
-        >
-          <span className="text-lg">✏️</span>
-          Editar
-        </button>
-        <button
-          onClick={() => { closeSwipe(); onDelete(item.id) }}
-          className="flex-1 bg-red-500 flex flex-col items-center justify-center gap-1 text-white text-xs font-medium"
-        >
-          <span className="text-lg">🗑️</span>
-          Borrar
-        </button>
+    <div
+      className={`flex items-center gap-3 py-3 px-4 transition-colors select-none ${pressing ? 'bg-gray-50' : 'bg-white'}`}
+      onTouchStart={startPress}
+      onTouchEnd={cancelPress}
+      onTouchMove={cancelPress}
+      onMouseDown={startPress}
+      onMouseUp={cancelPress}
+      onMouseLeave={cancelPress}
+    >
+      <span className="text-2xl flex-shrink-0 leading-none">{item.emoji}</span>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-text-main truncate leading-tight">{item.nombre}</p>
       </div>
-
-      {/* Fila principal deslizable */}
-      <div
-        className="relative bg-white flex items-center gap-3 py-3 px-4"
-        style={{
-          transform: `translateX(${offsetX}px)`,
-          transition: isDragging ? 'none' : 'transform 0.25s ease',
-        }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+      <button
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => { e.stopPropagation(); clearTimeout(longPressTimer.current) }}
+        onClick={() => toggleEnLista(item.id)}
+        className={`flex-shrink-0 w-12 h-7 rounded-full transition-all duration-300 relative ${item.enLista ? 'bg-primary' : 'bg-gray-200'}`}
+        aria-label={item.enLista ? 'Quitar de lista' : 'Añadir a lista'}
       >
-        <span className="text-2xl flex-shrink-0 leading-none">{item.emoji}</span>
-        <div className="flex-1 min-w-0">
-          <p className="font-medium text-text-main truncate leading-tight">{item.nombre}</p>
-        </div>
-        <button
-          onClick={() => toggleEnLista(item.id)}
-          className={`flex-shrink-0 w-12 h-7 rounded-full transition-all duration-300 relative ${
-            item.enLista ? 'bg-primary' : 'bg-gray-200'
-          }`}
-          aria-label={item.enLista ? 'Quitar de lista' : 'Añadir a lista'}
-        >
-          <span
-            className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-all duration-300 ${
-              item.enLista ? 'left-[calc(100%-26px)]' : 'left-0.5'
-            }`}
-          />
-        </button>
-      </div>
+        <span className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-all duration-300 ${item.enLista ? 'left-[calc(100%-26px)]' : 'left-0.5'}`} />
+      </button>
     </div>
   )
 }
 
 // ─── Grupo de categoría colapsable ───────────────────────────────────────────
-function CategoriaGroup({ categoria, items, onEdit, onDelete, autoExpand }) {
+function CategoriaGroup({ categoria, items, onLongPress, autoExpand }) {
   const [expanded, setExpanded] = useState(false)
-
-  // Si hay búsqueda activa, abrir automáticamente
-  useEffect(() => {
-    if (autoExpand) setExpanded(true)
-  }, [autoExpand])
+  useEffect(() => { if (autoExpand) setExpanded(true) }, [autoExpand])
 
   return (
     <div className="mb-2 bg-white rounded-xl overflow-hidden shadow-card border border-gray-100">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
-      >
+      <button onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-gray-50 transition-colors">
         <span className="text-lg">{categoria.emoji}</span>
         <span className="flex-1 font-semibold text-text-main text-sm">{categoria.nombre}</span>
         <span className="text-xs text-text-muted bg-gray-100 px-2 py-0.5 rounded-full">{items.length}</span>
@@ -244,11 +224,21 @@ function CategoriaGroup({ categoria, items, onEdit, onDelete, autoExpand }) {
       {expanded && (
         <div className="divide-y divide-gray-50">
           {items.map((item) => (
-            <ItemRow key={item.id} item={item} onEdit={onEdit} onDelete={onDelete} />
+            <ItemRow key={item.id} item={item} onLongPress={onLongPress} />
           ))}
         </div>
       )}
     </div>
+  )
+}
+
+// ─── SVG Plus Icon ────────────────────────────────────────────────────────────
+function PlusIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
   )
 }
 
@@ -263,6 +253,8 @@ export default function Lista() {
   const [nombreModal, setNombreModal] = useState('')
   const [toast, setToast] = useState({ visible: false, message: '' })
   const [chipsVisible, setChipsVisible] = useState(true)
+  const [actionItem, setActionItem] = useState(null)
+  const [actionOpen, setActionOpen] = useState(false)
   const lastScrollY = useRef(0)
   const scrollContainerRef = useRef(null)
 
@@ -270,33 +262,22 @@ export default function Lista() {
     const el = scrollContainerRef.current
     if (!el) return
     const currentY = el.scrollTop
-    if (currentY < 10) {
-      setChipsVisible(true)
-    } else if (currentY > lastScrollY.current + 5) {
-      setChipsVisible(false) // scrolling down
-    } else if (currentY < lastScrollY.current - 5) {
-      setChipsVisible(true) // scrolling up
-    }
+    if (currentY < 10) setChipsVisible(true)
+    else if (currentY > lastScrollY.current + 5) setChipsVisible(false)
+    else if (currentY < lastScrollY.current - 5) setChipsVisible(true)
     lastScrollY.current = currentY
   }, [])
 
-  const showToast = (message) => setToast({ visible: true, message })
+  const handleLongPress = (item) => { setActionItem(item); setActionOpen(true) }
+  const handleCloseAction = () => { setActionOpen(false); setTimeout(() => setActionItem(null), 300) }
 
   const handleDelete = (id) => {
     removeItem(id)
-    showToast('🗑️ Producto eliminado')
+    setToast({ visible: true, message: '🗑️ Producto eliminado' })
   }
 
-  const handleEdit = (item) => {
-    setItemEditar(item)
-    setModalOpen(true)
-  }
-
-  const handleOpenAdd = () => {
-    setItemEditar(null)
-    setNombreModal(busqueda.trim())
-    setModalOpen(true)
-  }
+  const handleEdit = (item) => { setItemEditar(item); setModalOpen(true) }
+  const handleOpenAdd = () => { setItemEditar(null); setNombreModal(busqueda.trim()); setModalOpen(true) }
 
   const { itemsFiltrados, hayResultadoExacto } = useMemo(() => {
     let filtered = items
@@ -305,9 +286,7 @@ export default function Lista() {
       const q = normalizar(busqueda.trim())
       filtered = filtered.filter((i) => normalizar(i.nombre).includes(q))
     }
-    const exacto = busqueda.trim()
-      ? items.some((i) => normalizar(i.nombre) === normalizar(busqueda.trim()))
-      : false
+    const exacto = busqueda.trim() ? items.some((i) => normalizar(i.nombre) === normalizar(busqueda.trim())) : false
     return { itemsFiltrados: filtered, hayResultadoExacto: exacto }
   }, [items, busqueda, filtro])
 
@@ -317,9 +296,7 @@ export default function Lista() {
       if (!map[item.categoriaId]) map[item.categoriaId] = []
       map[item.categoriaId].push(item)
     })
-    return CATEGORIES
-      .filter((cat) => map[cat.id]?.length > 0)
-      .map((cat) => ({ categoria: cat, items: map[cat.id] }))
+    return CATEGORIES.filter((cat) => map[cat.id]?.length > 0).map((cat) => ({ categoria: cat, items: map[cat.id] }))
   }, [itemsFiltrados])
 
   return (
@@ -328,49 +305,34 @@ export default function Lista() {
       <div className="px-4 pt-3 pb-2 sticky top-0 z-10 bg-bg-main">
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">🔍</span>
-          <input
-            className="input-base pl-8 pr-9 py-2 text-sm"
-            placeholder="Buscar o añadir producto..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
+          <input className="input-base pl-8 pr-9 py-2 text-sm" placeholder="Buscar o añadir producto..."
+            value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
           {busqueda && (
-            <button onClick={() => setBusqueda('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted w-6 h-6 flex items-center justify-center">
-              ✕
-            </button>
+            <button onClick={() => setBusqueda('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted w-6 h-6 flex items-center justify-center">✕</button>
           )}
         </div>
         {busqueda.trim() && !hayResultadoExacto && (
-          <button
-            onClick={handleOpenAdd}
-            className="mt-2 w-full flex items-center gap-2 px-4 py-3 bg-primary/5 border border-primary/20 rounded-xl text-primary font-medium text-sm hover:bg-primary/10 transition-colors"
-          >
-            <span>➕</span> Añadir &quot;{busqueda.trim()}&quot;
+          <button onClick={handleOpenAdd}
+            className="mt-2 w-full flex items-center gap-2 px-4 py-3 bg-primary/5 border border-primary/20 rounded-xl text-primary font-medium text-sm hover:bg-primary/10 transition-colors">
+            <PlusIcon /> Añadir &quot;{busqueda.trim()}&quot;
           </button>
         )}
       </div>
 
-      {/* Chips de filtro — se ocultan al hacer scroll hacia abajo */}
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-        chipsVisible ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0'
-      }`}>
-      <div className="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
-        {[
-          { key: 'todos', label: 'Todos', count: items.length },
-          { key: 'falta', label: 'Me falta', count: items.filter((i) => i.enLista).length },
-        ].map((f) => (
-          <button
-            key={f.key}
-            onClick={() => setFiltro(f.key)}
-            className={`chip flex-shrink-0 flex items-center gap-1.5 ${filtro === f.key ? 'chip-active' : 'chip-inactive'}`}
-          >
-            {f.label}
-            <span className={`text-xs px-1.5 py-0.5 rounded-full ${filtro === f.key ? 'bg-white/20' : 'bg-gray-200'}`}>
-              {f.count}
-            </span>
-          </button>
-        ))}
-      </div>
+      {/* Chips de filtro */}
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${chipsVisible ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
+          {[
+            { key: 'todos', label: 'Todos', count: items.length },
+            { key: 'falta', label: 'Me falta', count: items.filter((i) => i.enLista).length },
+          ].map((f) => (
+            <button key={f.key} onClick={() => setFiltro(f.key)}
+              className={`chip flex-shrink-0 flex items-center gap-1.5 ${filtro === f.key ? 'chip-active' : 'chip-inactive'}`}>
+              {f.label}
+              <span className={`text-xs px-1.5 py-0.5 rounded-full ${filtro === f.key ? 'bg-white/20' : 'bg-gray-200'}`}>{f.count}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Lista */}
@@ -382,7 +344,9 @@ export default function Lista() {
                 <span className="text-6xl mb-4">🛒</span>
                 <h3 className="text-lg font-semibold text-text-main mb-2">Tu lista está vacía</h3>
                 <p className="text-text-muted text-sm mb-6">Busca productos y añádelos</p>
-                <button onClick={handleOpenAdd} className="btn-primary">➕ Añadir primer producto</button>
+                <button onClick={handleOpenAdd} className="btn-primary flex items-center gap-2">
+                  <PlusIcon /> Añadir primer producto
+                </button>
               </>
             ) : (
               <>
@@ -398,8 +362,7 @@ export default function Lista() {
               key={categoria.id}
               categoria={categoria}
               items={catItems}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
+              onLongPress={handleLongPress}
               autoExpand={Boolean(busqueda.trim())}
             />
           ))
@@ -409,11 +372,20 @@ export default function Lista() {
       {/* FAB añadir */}
       <button
         onClick={handleOpenAdd}
-        className="fixed bottom-20 right-4 w-14 h-14 bg-primary text-white rounded-full shadow-fab flex items-center justify-center text-2xl transition-transform active:scale-95 hover:bg-primary-light z-20"
+        className="fixed bottom-20 right-4 w-14 h-14 rounded-full shadow-fab flex items-center justify-center transition-transform active:scale-95 z-20"
+        style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
         aria-label="Añadir producto"
       >
-        ➕
+        <PlusIcon />
       </button>
+
+      <ItemActionSheet
+        item={actionItem}
+        open={actionOpen}
+        onClose={handleCloseAction}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
       <ItemModal
         open={modalOpen}
