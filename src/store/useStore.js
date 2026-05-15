@@ -10,11 +10,14 @@ export const CATEGORIES = [
   { id: 'lacteos', nombre: 'Lácteos y Huevos', emoji: '🧀', orden: 4 },
   { id: 'panaderia', nombre: 'Panadería y Cereales', emoji: '🍞', orden: 5 },
   { id: 'despensa', nombre: 'Despensa y Conservas', emoji: '🫙', orden: 6 },
-  { id: 'congelados', nombre: 'Congelados', emoji: '❄️', orden: 7 },
-  { id: 'bebidas', nombre: 'Bebidas', emoji: '🥤', orden: 8 },
-  { id: 'limpieza', nombre: 'Limpieza del Hogar', emoji: '🧹', orden: 9 },
-  { id: 'higiene', nombre: 'Higiene y Cuidado Personal', emoji: '🧴', orden: 10 },
-  { id: 'otros', nombre: 'Otros', emoji: '📦', orden: 11 },
+  { id: 'charcuteria', nombre: 'Charcutería y Embutidos', emoji: '🥓', orden: 7 },
+  { id: 'congelados', nombre: 'Congelados', emoji: '❄️', orden: 8 },
+  { id: 'dulces', nombre: 'Dulces y Snacks', emoji: '🍫', orden: 9 },
+  { id: 'especias', nombre: 'Especias y Condimentos', emoji: '🌶️', orden: 10 },
+  { id: 'bebidas', nombre: 'Bebidas', emoji: '🥤', orden: 11 },
+  { id: 'limpieza', nombre: 'Limpieza del Hogar', emoji: '🧹', orden: 12 },
+  { id: 'higiene', nombre: 'Higiene y Cuidado Personal', emoji: '🧴', orden: 13 },
+  { id: 'otros', nombre: 'Otros', emoji: '📦', orden: 14 },
 ]
 
 // Helper: convertir fila de Supabase → item local

@@ -28,13 +28,15 @@ export const INITIAL_ITEMS = [
   { nombre: 'Hamburguesa',                categoriaId: 'carnes', emoji: '🍔' },
   { nombre: 'Carne',                      categoriaId: 'carnes', emoji: '🥩' },
   { nombre: 'Salchichas',                 categoriaId: 'carnes', emoji: '🌭' },
-  { nombre: 'Lonchas Pechuga de Pavo',    categoriaId: 'carnes', emoji: '🦃' },
-  { nombre: 'Taquitos de Beicon',         categoriaId: 'carnes', emoji: '🥓' },
-  { nombre: 'Taquitos de Jamón',          categoriaId: 'carnes', emoji: '🍖' },
-  { nombre: 'Jamon Serrano',              categoriaId: 'carnes', emoji: '🍖' },
-  { nombre: 'Jamon Cocido',               categoriaId: 'carnes', emoji: '🍖' },
-  { nombre: 'Fuet',                       categoriaId: 'carnes', emoji: '🌶️' },
   { nombre: 'Pollo con Verdura para Fajitas', categoriaId: 'carnes', emoji: '🌯' },
+
+  // ─── CHARCUTERÍA Y EMBUTIDOS ──────────────────────────────────
+  { nombre: 'Lonchas Pechuga de Pavo',    categoriaId: 'charcuteria', emoji: '🦃' },
+  { nombre: 'Taquitos de Beicon',         categoriaId: 'charcuteria', emoji: '🥓' },
+  { nombre: 'Taquitos de Jamón',          categoriaId: 'charcuteria', emoji: '🍖' },
+  { nombre: 'Jamon Serrano',              categoriaId: 'charcuteria', emoji: '🍖' },
+  { nombre: 'Jamon Cocido',               categoriaId: 'charcuteria', emoji: '🍖' },
+  { nombre: 'Fuet',                       categoriaId: 'charcuteria', emoji: '🥩' },
 
   // ─── PESCADOS Y MARISCOS ──────────────────────────────────────
   { nombre: 'Merluza',        categoriaId: 'pescados', emoji: '🐟' },
@@ -69,11 +71,15 @@ export const INITIAL_ITEMS = [
   { nombre: 'Salsa Gaucha',     categoriaId: 'despensa', emoji: '🫙' },
   { nombre: 'Fajitas',          categoriaId: 'despensa', emoji: '🌮' },
   { nombre: 'Arroz Tres Delicias', categoriaId: 'despensa', emoji: '🍱' },
-  { nombre: 'Almendras',        categoriaId: 'despensa', emoji: '🥜' },
-  { nombre: 'Jengibre en Polvo', categoriaId: 'despensa', emoji: '🫚' },
+
+  // ─── DULCES Y SNACKS ──────────────────────────────────────────
+  { nombre: 'Almendras',        categoriaId: 'dulces', emoji: '🥜' },
+  { nombre: 'Patatas de Bolsa', categoriaId: 'dulces', emoji: '🥔' },
+
+  // ─── ESPECIAS Y CONDIMENTOS ───────────────────────────────────
+  { nombre: 'Jengibre en Polvo', categoriaId: 'especias', emoji: '🫚' },
 
   // ─── CONGELADOS ───────────────────────────────────────────────
-  { nombre: 'Patatas de Bolsa',  categoriaId: 'congelados', emoji: '🥔' },
   { nombre: 'Patatas Fritas',    categoriaId: 'congelados', emoji: '🍟' },
 
   // ─── BEBIDAS ──────────────────────────────────────────────────
