@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import useStore, { CATEGORIES } from '../store/useStore'
 import Modal from '../components/common/Modal'
 import Toast from '../components/common/Toast'
-import EmojiPickerField from '../components/common/EmojiPickerField'
+import IconField from '../components/common/IconField'
 
 function normalizar(str) {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -67,6 +67,7 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
   const esEdicion = Boolean(itemEditar)
   const [nombre, setNombre] = useState('')
   const [emoji, setEmoji] = useState('📦')
+  const [iconUrl, setIconUrl] = useState('')
   const [categoriaId, setCategoriaId] = useState('otros')
   const [enLista, setEnLista] = useState(false)
   const [error, setError] = useState('')
@@ -74,10 +75,10 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
   useEffect(() => {
     if (open) {
       if (esEdicion) {
-        setNombre(itemEditar.nombre); setEmoji(itemEditar.emoji)
-        setCategoriaId(itemEditar.categoriaId); setEnLista(itemEditar.enLista)
+        setNombre(itemEditar.nombre); setEmoji(itemEditar.emoji || '📦')
+        setIconUrl(itemEditar.iconUrl || ''); setCategoriaId(itemEditar.categoriaId); setEnLista(itemEditar.enLista)
       } else {
-        setNombre(nombreInicial); setEmoji('📦'); setCategoriaId('otros'); setEnLista(false)
+        setNombre(nombreInicial); setEmoji('📦'); setIconUrl(''); setCategoriaId('otros'); setEnLista(false)
       }
       setError('')
     }
@@ -86,7 +87,7 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
   const handleGuardar = () => {
     if (nombre.trim().length < 2) { setError('El nombre debe tener al menos 2 caracteres'); return }
     if (esEdicion) {
-      updateItem(itemEditar.id, { nombre: nombre.trim(), emoji: emoji || '📦', categoriaId, enLista })
+      updateItem(itemEditar.id, { nombre: nombre.trim(), emoji: emoji || '📦', iconUrl: iconUrl || null, categoriaId, enLista })
     } else {
       addItem(nombre.trim(), categoriaId, emoji || '📦')
       if (enLista) {
@@ -118,7 +119,7 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
           {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
         </div>
 
-        <EmojiPickerField value={emoji} onChange={setEmoji} label="Emoji" />
+        <IconField emoji={emoji} iconUrl={iconUrl} onEmojiChange={setEmoji} onIconUrlChange={setIconUrl} label="Icono" />
 
         <div>
           <label className="block text-sm font-medium text-text-main mb-2">
@@ -190,7 +191,11 @@ function ItemRow({ item, onLongPress }) {
       onMouseUp={cancelPress}
       onMouseLeave={cancelPress}
     >
-      <span className="text-2xl flex-shrink-0 leading-none">{item.emoji}</span>
+      {item.iconUrl ? (
+        <img src={item.iconUrl} alt={item.nombre} className="w-8 h-8 flex-shrink-0 rounded-lg object-contain" />
+      ) : (
+        <span className="text-2xl flex-shrink-0 leading-none">{item.emoji || '📦'}</span>
+      )}
       <div className="flex-1 min-w-0">
         <p className="font-medium text-text-main truncate leading-tight">{item.nombre}</p>
       </div>

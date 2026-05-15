@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import useStore from '../store/useStore'
-import EmojiPickerField from '../components/common/EmojiPickerField'
+import IconField from '../components/common/IconField'
 
 function normalizar(str) {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -87,7 +87,13 @@ export default function FormPlato() {
           />
         </div>
 
-        <EmojiPickerField value={emoji} onChange={setEmoji} label="Emoji del plato" />
+        <IconField
+          emoji={emoji}
+          iconUrl={platoExistente?.iconUrl || ''}
+          onEmojiChange={setEmoji}
+          onIconUrlChange={() => {}}
+          label="Icono del plato"
+        />
 
         {/* Ingredientes */}
         <div>
