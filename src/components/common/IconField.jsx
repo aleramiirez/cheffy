@@ -2,18 +2,23 @@ import { useState, useRef } from 'react'
 import { supabase, isSupabaseConfigured } from '../../lib/supabase'
 import useAuthStore from '../../store/useAuthStore'
 
-async function comprimirImagen(file, maxSize = 200) {
+// Recortar imagen en cuadrado centrado y redimensionar
+async function cropAndResize(file, size = 200) {
   return new Promise((resolve) => {
     const reader = new FileReader()
     reader.onload = (e) => {
       const img = new Image()
       img.onload = () => {
         const canvas = document.createElement('canvas')
-        const ratio = Math.min(maxSize / img.width, maxSize / img.height, 1)
-        canvas.width = img.width * ratio
-        canvas.height = img.height * ratio
-        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
-        resolve(canvas.toDataURL('image/png', 0.8))
+        canvas.width = size
+        canvas.height = size
+        const ctx = canvas.getContext('2d')
+        // Calcular recorte cuadrado centrado
+        const minSide = Math.min(img.width, img.height)
+        const sx = (img.width - minSide) / 2
+        const sy = (img.height - minSide) / 2
+        ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size)
+        resolve(canvas.toDataURL('image/png', 0.85))
       }
       img.src = e.target.result
     }
@@ -35,14 +40,17 @@ export default function IconField({ emoji, iconUrl, onEmojiChange, onIconUrlChan
       if (isSupabaseConfigured && supabase && user) {
         const ext = file.name.split('.').pop() || 'png'
         const path = `${user.id}/${crypto.randomUUID()}.${ext}`
-        const { data, error } = await supabase.storage.from('icons').upload(path, file, { upsert: true })
+        // Comprimir antes de subir
+        const base64 = await cropAndResize(file, 200)
+        const blob = await fetch(base64).then(r => r.blob())
+        const { data, error } = await supabase.storage.from('icons').upload(path, blob, { upsert: true, contentType: 'image/png' })
         if (!error) {
           const { data: urlData } = supabase.storage.from('icons').getPublicUrl(data.path)
           onIconUrlChange(urlData.publicUrl)
           onEmojiChange('')
         }
       } else {
-        const base64 = await comprimirImagen(file, 200)
+        const base64 = await cropAndResize(file, 200)
         onIconUrlChange(base64)
         onEmojiChange('')
       }

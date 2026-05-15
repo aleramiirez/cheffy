@@ -89,14 +89,20 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
     if (esEdicion) {
       updateItem(itemEditar.id, { nombre: nombre.trim(), emoji: emoji || '📦', iconUrl: iconUrl || null, categoriaId, enLista })
     } else {
-      addItem(nombre.trim(), categoriaId, emoji || '📦')
-      if (enLista) {
-        setTimeout(() => {
-          const newItems = useStore.getState().items
-          const created = newItems.find((i) => normalizar(i.nombre) === normalizar(nombre.trim()) && !i.enLista)
-          if (created) toggleEnLista(created.id)
-        }, 0)
+      // Crear item con iconUrl si existe
+      const newId = crypto.randomUUID()
+      const newItem = {
+        id: newId,
+        nombre: nombre.trim(),
+        categoriaId,
+        emoji: emoji || '📦',
+        iconUrl: iconUrl || null,
+        enLista: enLista,
+        tengo: false,
+        creadoEn: Date.now(),
       }
+      // Añadir directamente al store para preservar iconUrl
+      useStore.setState((state) => ({ items: [...state.items, newItem] }))
     }
     onClose()
   }
