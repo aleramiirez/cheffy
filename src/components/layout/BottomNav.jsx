@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import useStore from '../../store/useStore'
+import useStore, { setCurrentUserId } from '../../store/useStore'
+import useAuthStore from '../../store/useAuthStore'
 
 const tabs = [
   { to: '/', icon: '🛍️', label: 'Lista' },
@@ -12,6 +13,14 @@ export default function BottomNav() {
   const location = useLocation()
   const items = useStore((s) => s.items)
   const itemsFaltantes = items.filter((i) => i.enLista).length
+  const logout = useAuthStore((s) => s.logout)
+
+  const handleLogout = async () => {
+    setCurrentUserId(null)
+    // Limpiar el store local al cerrar sesión
+    useStore.setState({ items: [], recipes: [], platos: [], itemsTachados: [] })
+    await logout()
+  }
 
   // Ocultar BottomNav en pantallas de formulario de receta
   const hideOn = ['/recetas/nueva', '/recetas/editar', '/platos/nuevo', '/platos/editar']
@@ -56,6 +65,16 @@ export default function BottomNav() {
             </NavLink>
           )
         })}
+
+        {/* Botón logout */}
+        <button
+          onClick={handleLogout}
+          className="flex flex-col items-center justify-center flex-shrink-0 w-12 h-full gap-0.5"
+          title="Cerrar sesión"
+        >
+          <span className="text-xl leading-none">🚪</span>
+          <span className="text-[10px] font-medium" style={{ color: 'var(--color-text-muted)' }}>Salir</span>
+        </button>
       </div>
     </nav>
   )

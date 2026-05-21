@@ -8,7 +8,7 @@ import Recetas from './pages/Recetas'
 import FormReceta from './pages/FormReceta'
 import FormPlato from './pages/FormPlato'
 import Login from './pages/Login'
-import useStore from './store/useStore'
+import useStore, { setCurrentUserId } from './store/useStore'
 import useAuthStore from './store/useAuthStore'
 import { INITIAL_ITEMS } from './data/initialItems'
 
@@ -19,11 +19,12 @@ function AppInit() {
   const loadFromSupabase = useStore((s) => s.loadFromSupabase)
 
   useEffect(() => {
+    // Siempre actualizar el userId en el store
+    setCurrentUserId(user?.id ?? null)
+
     if (user) {
-      // Usuario autenticado: cargar datos desde Supabase
       loadFromSupabase(user.id)
     } else if (items.length === 0) {
-      // Sin usuario: usar datos iniciales (modo offline/demo)
       INITIAL_ITEMS.forEach((item) => {
         addItem(item.nombre, item.categoriaId, item.emoji)
       })

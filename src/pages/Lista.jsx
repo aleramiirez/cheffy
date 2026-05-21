@@ -84,25 +84,23 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
     }
   }, [open, nombreInicial, itemEditar])
 
+  const addItemFull = useStore((s) => s.addItemFull)
+
   const handleGuardar = () => {
     if (nombre.trim().length < 2) { setError('El nombre debe tener al menos 2 caracteres'); return }
     if (esEdicion) {
       updateItem(itemEditar.id, { nombre: nombre.trim(), emoji: emoji || '📦', iconUrl: iconUrl || null, categoriaId, enLista })
     } else {
-      // Crear item con iconUrl si existe
-      const newId = crypto.randomUUID()
-      const newItem = {
-        id: newId,
+      addItemFull({
+        id: crypto.randomUUID(),
         nombre: nombre.trim(),
         categoriaId,
         emoji: emoji || '📦',
         iconUrl: iconUrl || null,
-        enLista: enLista,
+        enLista,
         tengo: false,
         creadoEn: Date.now(),
-      }
-      // Añadir directamente al store para preservar iconUrl
-      useStore.setState((state) => ({ items: [...state.items, newItem] }))
+      })
     }
     onClose()
   }
