@@ -14,15 +14,16 @@ export const CATEGORIES = [
   { id: 'lacteos', nombre: 'Lácteos y Huevos', emoji: '🧀', orden: 4 },
   { id: 'panaderia', nombre: 'Panadería y Cereales', emoji: '🍞', orden: 5 },
   { id: 'despensa', nombre: 'Despensa y Conservas', emoji: '🫙', orden: 6 },
-  { id: 'salsas', nombre: 'Salsas', emoji: '🥫', orden: 7 },
+  { id: 'salsas-condimentos', nombre: 'Salsas y Condimentos', emoji: '🥫', orden: 7 },
   { id: 'charcuteria', nombre: 'Charcutería y Embutidos', emoji: '🥓', orden: 8 },
   { id: 'congelados', nombre: 'Congelados', emoji: '❄️', orden: 9 },
   { id: 'dulces', nombre: 'Dulces y Snacks', emoji: '🍫', orden: 10 },
-  { id: 'especias', nombre: 'Especias y Condimentos', emoji: '🌶️', orden: 11 },
+  { id: 'dietetica', nombre: 'Especiales y Sin Lactosa', emoji: '🌱', orden: 11 },
   { id: 'bebidas', nombre: 'Bebidas', emoji: '🥤', orden: 12 },
   { id: 'limpieza', nombre: 'Limpieza del Hogar', emoji: '🧹', orden: 13 },
-  { id: 'higiene', nombre: 'Higiene y Cuidado Personal', emoji: '🧴', orden: 14 },
-  { id: 'otros', nombre: 'Otros', emoji: '📦', orden: 15 },
+  { id: 'higiene', nombre: 'Higiene y Cuidado', emoji: '🧴', orden: 14 },
+  { id: 'mascotas', nombre: 'Mascotas', emoji: '🐾', orden: 15 },
+  { id: 'otros', nombre: 'Otros', emoji: '📦', orden: 16 },
 ]
 
 function dbRowToItem(row) {

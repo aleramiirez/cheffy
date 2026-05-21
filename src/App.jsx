@@ -24,11 +24,8 @@ function AppInit() {
 
     if (user) {
       loadFromSupabase(user.id)
-    } else if (items.length === 0) {
-      INITIAL_ITEMS.forEach((item) => {
-        addItem(item.nombre, item.categoriaId, item.emoji)
-      })
     }
+    // INITIAL_ITEMS está vacío - los productos se añaden desde la app
   }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return null
