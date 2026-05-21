@@ -1,8 +1,9 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
-import useStore, { CATEGORIES } from '../store/useStore'
+import useStore, { CATEGORIES, setCurrentUserId } from '../store/useStore'
+import useAuthStore from '../store/useAuthStore'
 import Modal from '../components/common/Modal'
 import Toast from '../components/common/Toast'
-import IconField from '../components/common/IconField'
+import CompactIconField from '../components/common/CompactIconField'
 
 function normalizar(str) {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -105,9 +106,18 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
     onClose()
   }
 
+  const modalFooter = (
+    <div className="flex gap-3">
+      <button onClick={onClose} className="flex-1 btn-secondary">Cancelar</button>
+      <button onClick={handleGuardar} className="flex-1 btn-primary">
+        {esEdicion ? '💾 Actualizar' : '✅ Guardar'}
+      </button>
+    </div>
+  )
+
   return (
-    <Modal open={open} onClose={onClose} title={esEdicion ? 'Editar producto' : 'Añadir producto'}>
-      <div className="space-y-4 pb-4">
+    <Modal open={open} onClose={onClose} title={esEdicion ? 'Editar producto' : 'Añadir producto'} footer={modalFooter}>
+      <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-text-main mb-1.5">
             Nombre <span className="text-red-500">*</span>
@@ -123,7 +133,7 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
           {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
         </div>
 
-        <IconField emoji={emoji} iconUrl={iconUrl} onEmojiChange={setEmoji} onIconUrlChange={setIconUrl} label="Icono" />
+        <CompactIconField emoji={emoji} iconUrl={iconUrl} onEmojiChange={setEmoji} onIconUrlChange={setIconUrl} />
 
         <div>
           <label className="block text-sm font-medium text-text-main mb-2">
@@ -131,14 +141,8 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
           </label>
           <div className="space-y-1 max-h-44 overflow-y-auto pr-1">
             {CATEGORIES.map((cat) => (
-              <label
-                key={cat.id}
-                className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-colors ${
-                  categoriaId === cat.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-gray-50'
-                }`}
-              >
-                <input type="radio" name="categoria" value={cat.id} checked={categoriaId === cat.id}
-                  onChange={() => setCategoriaId(cat.id)} className="accent-primary" />
+              <label key={cat.id} className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-colors ${categoriaId === cat.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-gray-50'}`}>
+                <input type="radio" name="categoria" value={cat.id} checked={categoriaId === cat.id} onChange={() => setCategoriaId(cat.id)} className="accent-primary" />
                 <span className="text-lg">{cat.emoji}</span>
                 <span className="text-sm text-text-main">{cat.nombre}</span>
               </label>
@@ -152,13 +156,6 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
             <span className="text-sm font-medium text-text-main">Añadir a lista de compra</span>
           </label>
         )}
-
-        <div className="flex gap-3 pt-2">
-          <button onClick={onClose} className="flex-1 btn-secondary">Cancelar</button>
-          <button onClick={handleGuardar} className="flex-1 btn-primary">
-            {esEdicion ? '💾 Actualizar' : '✅ Guardar'}
-          </button>
-        </div>
       </div>
     </Modal>
   )
@@ -241,6 +238,46 @@ function CategoriaGroup({ categoria, items, onLongPress, autoExpand }) {
   )
 }
 
+// ─── Profile bar con logout ───────────────────────────────────────────────────
+function ProfileBar() {
+  const user = useAuthStore((s) => s.user)
+  const logout = useAuthStore((s) => s.logout)
+  const [confirm, setConfirm] = useState(false)
+
+  const handleLogout = async () => {
+    setCurrentUserId(null)
+    useStore.setState({ items: [], recipes: [], platos: [], itemsTachados: [] })
+    await logout()
+  }
+
+  const email = user?.email || ''
+  const initials = email.charAt(0).toUpperCase()
+
+  return (
+    <div className="flex items-center justify-between px-4 pt-3 pb-1">
+      <span className="text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
+        {email}
+      </span>
+      {confirm ? (
+        <div className="flex items-center gap-2">
+          <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>¿Salir?</span>
+          <button onClick={handleLogout} className="text-xs px-2 py-1 bg-red-500 text-white rounded-lg">Sí</button>
+          <button onClick={() => setConfirm(false)} className="text-xs px-2 py-1 rounded-lg" style={{ backgroundColor: 'var(--color-border)' }}>No</button>
+        </div>
+      ) : (
+        <button
+          onClick={() => setConfirm(true)}
+          className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
+          style={{ backgroundColor: 'var(--color-primary)' }}
+          title="Cerrar sesión"
+        >
+          {initials}
+        </button>
+      )}
+    </div>
+  )
+}
+
 // ─── SVG Plus Icon ────────────────────────────────────────────────────────────
 function PlusIcon() {
   return (
@@ -310,8 +347,11 @@ export default function Lista() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Mini header con perfil */}
+      <ProfileBar />
+
       {/* Buscador sticky */}
-      <div className="px-4 pt-3 pb-2 sticky top-0 z-10 bg-bg-main">
+      <div className="px-4 pt-2 pb-2 sticky top-0 z-10 bg-bg-main">
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">🔍</span>
           <input className="input-base pl-8 pr-9 py-2 text-sm" placeholder="Buscar o añadir producto..."
