@@ -66,9 +66,9 @@ export const INITIAL_ITEMS = [
   { nombre: 'Pasta Pajarita',   categoriaId: 'despensa', emoji: '🍝' },
   { nombre: 'Espaguettis',      categoriaId: 'despensa', emoji: '🍝' },
   { nombre: 'Maíz',             categoriaId: 'despensa', emoji: '🌽' },
-  { nombre: 'Tomate Frito',     categoriaId: 'despensa', emoji: '🍅' },
-  { nombre: 'Ketchup',          categoriaId: 'despensa', emoji: '🍅' },
-  { nombre: 'Salsa Gaucha',     categoriaId: 'despensa', emoji: '🫙' },
+  { nombre: 'Tomate Frito',     categoriaId: 'salsas', emoji: '🍅' },
+  { nombre: 'Ketchup',          categoriaId: 'salsas', emoji: '🥫' },
+  { nombre: 'Salsa Gaucha',     categoriaId: 'salsas', emoji: '�' },
   { nombre: 'Fajitas',          categoriaId: 'despensa', emoji: '🌮' },
   { nombre: 'Arroz Tres Delicias', categoriaId: 'despensa', emoji: '🍱' },
 
