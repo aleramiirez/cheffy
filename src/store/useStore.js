@@ -17,13 +17,12 @@ export const CATEGORIES = [
   { id: 'salsas', nombre: 'Salsas', emoji: '🥫', orden: 7 },
   { id: 'charcuteria', nombre: 'Charcutería y Embutidos', emoji: '🥓', orden: 8 },
   { id: 'congelados', nombre: 'Congelados', emoji: '❄️', orden: 9 },
-  { id: 'dulces', nombre: 'Dulces y Snacks', emoji: '🍫', orden: 9 },
-  { id: 'especias', nombre: 'Especias y Condimentos', emoji: '🌶️', orden: 10 },
-  { id: 'bebidas', nombre: 'Bebidas', emoji: '🥤', orden: 11 },
-  { id: 'limpieza', nombre: 'Limpieza del Hogar', emoji: '🧹', orden: 12 },
-  { id: 'higiene', nombre: 'Higiene y Cuidado Personal', emoji: '🧴', orden: 13 },
-  { id: 'otros', nombre: 'Otros', emoji: '📦', orden: 14 },
-  { id: 'congelados', nombre: 'Congelados', emoji: '❄️', orden: 8 },
+  { id: 'dulces', nombre: 'Dulces y Snacks', emoji: '🍫', orden: 10 },
+  { id: 'especias', nombre: 'Especias y Condimentos', emoji: '🌶️', orden: 11 },
+  { id: 'bebidas', nombre: 'Bebidas', emoji: '🥤', orden: 12 },
+  { id: 'limpieza', nombre: 'Limpieza del Hogar', emoji: '🧹', orden: 13 },
+  { id: 'higiene', nombre: 'Higiene y Cuidado Personal', emoji: '🧴', orden: 14 },
+  { id: 'otros', nombre: 'Otros', emoji: '📦', orden: 15 },
 ]
 
 function dbRowToItem(row) {
