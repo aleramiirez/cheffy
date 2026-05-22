@@ -304,14 +304,29 @@ export default function Lista() {
   const lastScrollY = useRef(0)
   const scrollContainerRef = useRef(null)
 
+  const isAnimatingRef = useRef(false)
+
   const handleScroll = useCallback(() => {
     const el = scrollContainerRef.current
-    if (!el) return
+    if (!el || isAnimatingRef.current) return
     const currentY = el.scrollTop
-    if (currentY < 10) setChipsVisible(true)
-    else if (currentY > lastScrollY.current + 5) setChipsVisible(false)
-    else if (currentY < lastScrollY.current - 5) setChipsVisible(true)
-    lastScrollY.current = currentY
+
+    if (currentY < 10) {
+      setChipsVisible(true)
+    } else if (currentY > lastScrollY.current + 20) {
+      // Scrolling down significantly → hide chips
+      isAnimatingRef.current = true
+      setChipsVisible(false)
+      setTimeout(() => { isAnimatingRef.current = false }, 350)
+      lastScrollY.current = currentY
+    } else if (currentY < lastScrollY.current - 20) {
+      // Scrolling up significantly → show chips
+      isAnimatingRef.current = true
+      setChipsVisible(true)
+      setTimeout(() => { isAnimatingRef.current = false }, 350)
+      lastScrollY.current = currentY
+    }
+    // If movement < 20px, don't update lastScrollY to avoid micro-triggers
   }, [])
 
   const handleLongPress = (item) => { setActionItem(item); setActionOpen(true) }
