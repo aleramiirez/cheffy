@@ -32,6 +32,7 @@ function dbRowToItem(row) {
     emoji: row.emoji || '📦', iconUrl: row.icon_url || null,
     enLista: row.en_lista, tengo: row.tengo,
     sinLactosa: row.sin_lactosa || false,
+    marca: row.marca || '',
     creadoEn: new Date(row.created_at).getTime(),
   }
 }
@@ -80,7 +81,7 @@ const useStore = create(
         const userId = uid()
         const item = {
           id: crypto.randomUUID(), nombre: nombre.trim(), categoriaId, emoji,
-          iconUrl: null, enLista: false, tengo: false, sinLactosa: false, creadoEn: Date.now(),
+          iconUrl: null, enLista: false, tengo: false, sinLactosa: false, marca: '', creadoEn: Date.now(),
         }
         set((s) => ({ items: [...s.items, item] }))
         if (userId && supabase) {
@@ -103,6 +104,7 @@ const useStore = create(
             icon_url: item.iconUrl || null,
             en_lista: item.enLista || false, tengo: false,
             sin_lactosa: item.sinLactosa || false,
+            marca: item.marca || '',
           }).then(({ error }) => { if (error) console.error('addItemFull:', error) })
         }
       },
@@ -137,6 +139,7 @@ const useStore = create(
           if (changes.enLista !== undefined) db.en_lista = changes.enLista
           if (changes.tengo !== undefined) db.tengo = changes.tengo
           if (changes.sinLactosa !== undefined) db.sin_lactosa = changes.sinLactosa
+          if (changes.marca !== undefined) db.marca = changes.marca
           if (Object.keys(db).length > 0) {
             await supabase.from('items').update(db).eq('id', id)
           }

@@ -73,6 +73,7 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
   const [categoriaId, setCategoriaId] = useState('otros')
   const [enLista, setEnLista] = useState(false)
   const [sinLactosa, setSinLactosa] = useState(false)
+  const [marca, setMarca] = useState('')
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -81,9 +82,10 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
         setNombre(itemEditar.nombre); setEmoji(itemEditar.emoji || '📦')
         setIconUrl(itemEditar.iconUrl || ''); setCategoriaId(itemEditar.categoriaId)
         setEnLista(itemEditar.enLista); setSinLactosa(itemEditar.sinLactosa || false)
+        setMarca(itemEditar.marca || '')
       } else {
         setNombre(nombreInicial); setEmoji('📦'); setIconUrl('')
-        setCategoriaId('otros'); setEnLista(false); setSinLactosa(false)
+        setCategoriaId('otros'); setEnLista(false); setSinLactosa(false); setMarca('')
       }
       setError('')
     }
@@ -94,7 +96,7 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
   const handleGuardar = () => {
     if (nombre.trim().length < 2) { setError('El nombre debe tener al menos 2 caracteres'); return }
     if (esEdicion) {
-      updateItem(itemEditar.id, { nombre: nombre.trim(), emoji: emoji || '📦', iconUrl: iconUrl || null, categoriaId, enLista, sinLactosa })
+      updateItem(itemEditar.id, { nombre: nombre.trim(), emoji: emoji || '📦', iconUrl: iconUrl || null, categoriaId, enLista, sinLactosa, marca: marca.trim() })
     } else {
       addItemFull({
         id: crypto.randomUUID(),
@@ -104,6 +106,7 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
         iconUrl: iconUrl || null,
         enLista,
         sinLactosa,
+        marca: marca.trim(),
         tengo: false,
         creadoEn: Date.now(),
       })
@@ -162,6 +165,19 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
           </label>
         )}
 
+        <div>
+          <label className="block text-sm font-medium text-text-main mb-1.5">
+            Marca <span className="text-text-muted font-normal">(opcional)</span>
+          </label>
+          <input
+            className="input-base text-sm py-2"
+            placeholder="Ej: Hacendado, Mercadona, Nestlé..."
+            value={marca}
+            onChange={(e) => setMarca(e.target.value)}
+            maxLength={50}
+          />
+        </div>
+
         <label className="flex items-center gap-3 p-3 rounded-xl cursor-pointer border" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>
           <input type="checkbox" checked={sinLactosa} onChange={(e) => setSinLactosa(e.target.checked)} className="w-5 h-5 accent-primary" />
           <img src={sinLactosaLogo} alt="Sin lactosa" className="w-5 h-5 object-contain" />
@@ -210,6 +226,9 @@ function ItemRow({ item, onLongPress }) {
       )}
       <div className="flex-1 min-w-0">
         <p className="font-medium text-text-main truncate leading-tight">{item.nombre}</p>
+        {item.marca && (
+          <p className="text-xs truncate" style={{ color: 'var(--color-text-muted)' }}>{item.marca}</p>
+        )}
       </div>
       {item.sinLactosa && (
         <img src={sinLactosaLogo} alt="Sin lactosa" className="w-5 h-5 flex-shrink-0 object-contain opacity-80" title="Sin lactosa" />
