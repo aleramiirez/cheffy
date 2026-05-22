@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
+import sinLactosaLogo from '../assets/sin-lactosa.png'
 import useStore, { CATEGORIES, setCurrentUserId } from '../store/useStore'
 import useAuthStore from '../store/useAuthStore'
 import Modal from '../components/common/Modal'
@@ -71,15 +72,18 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
   const [iconUrl, setIconUrl] = useState('')
   const [categoriaId, setCategoriaId] = useState('otros')
   const [enLista, setEnLista] = useState(false)
+  const [sinLactosa, setSinLactosa] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
     if (open) {
       if (esEdicion) {
         setNombre(itemEditar.nombre); setEmoji(itemEditar.emoji || '📦')
-        setIconUrl(itemEditar.iconUrl || ''); setCategoriaId(itemEditar.categoriaId); setEnLista(itemEditar.enLista)
+        setIconUrl(itemEditar.iconUrl || ''); setCategoriaId(itemEditar.categoriaId)
+        setEnLista(itemEditar.enLista); setSinLactosa(itemEditar.sinLactosa || false)
       } else {
-        setNombre(nombreInicial); setEmoji('📦'); setIconUrl(''); setCategoriaId('otros'); setEnLista(false)
+        setNombre(nombreInicial); setEmoji('📦'); setIconUrl('')
+        setCategoriaId('otros'); setEnLista(false); setSinLactosa(false)
       }
       setError('')
     }
@@ -90,7 +94,7 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
   const handleGuardar = () => {
     if (nombre.trim().length < 2) { setError('El nombre debe tener al menos 2 caracteres'); return }
     if (esEdicion) {
-      updateItem(itemEditar.id, { nombre: nombre.trim(), emoji: emoji || '📦', iconUrl: iconUrl || null, categoriaId, enLista })
+      updateItem(itemEditar.id, { nombre: nombre.trim(), emoji: emoji || '📦', iconUrl: iconUrl || null, categoriaId, enLista, sinLactosa })
     } else {
       addItemFull({
         id: crypto.randomUUID(),
@@ -99,6 +103,7 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
         emoji: emoji || '📦',
         iconUrl: iconUrl || null,
         enLista,
+        sinLactosa,
         tengo: false,
         creadoEn: Date.now(),
       })
@@ -156,6 +161,12 @@ function ItemModal({ open, onClose, itemEditar = null, nombreInicial = '' }) {
             <span className="text-sm font-medium text-text-main">Añadir a lista de compra</span>
           </label>
         )}
+
+        <label className="flex items-center gap-3 p-3 rounded-xl cursor-pointer border" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>
+          <input type="checkbox" checked={sinLactosa} onChange={(e) => setSinLactosa(e.target.checked)} className="w-5 h-5 accent-primary" />
+          <img src={sinLactosaLogo} alt="Sin lactosa" className="w-5 h-5 object-contain" />
+          <span className="text-sm font-medium text-text-main">Sin lactosa</span>
+        </label>
       </div>
     </Modal>
   )
@@ -200,6 +211,9 @@ function ItemRow({ item, onLongPress }) {
       <div className="flex-1 min-w-0">
         <p className="font-medium text-text-main truncate leading-tight">{item.nombre}</p>
       </div>
+      {item.sinLactosa && (
+        <img src={sinLactosaLogo} alt="Sin lactosa" className="w-5 h-5 flex-shrink-0 object-contain opacity-80" title="Sin lactosa" />
+      )}
       <button
         onMouseDown={(e) => e.stopPropagation()}
         onTouchStart={(e) => { e.stopPropagation(); clearTimeout(longPressTimer.current) }}

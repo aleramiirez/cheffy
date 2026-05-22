@@ -31,6 +31,7 @@ function dbRowToItem(row) {
     id: row.id, nombre: row.nombre, categoriaId: row.categoria_id,
     emoji: row.emoji || '📦', iconUrl: row.icon_url || null,
     enLista: row.en_lista, tengo: row.tengo,
+    sinLactosa: row.sin_lactosa || false,
     creadoEn: new Date(row.created_at).getTime(),
   }
 }
@@ -79,13 +80,14 @@ const useStore = create(
         const userId = uid()
         const item = {
           id: crypto.randomUUID(), nombre: nombre.trim(), categoriaId, emoji,
-          iconUrl: null, enLista: false, tengo: false, creadoEn: Date.now(),
+          iconUrl: null, enLista: false, tengo: false, sinLactosa: false, creadoEn: Date.now(),
         }
         set((s) => ({ items: [...s.items, item] }))
         if (userId && supabase) {
           await supabase.from('items').insert({
             id: item.id, user_id: userId, nombre: item.nombre,
-            categoria_id: item.categoriaId, emoji: item.emoji, en_lista: false, tengo: false,
+            categoria_id: item.categoriaId, emoji: item.emoji,
+            en_lista: false, tengo: false, sin_lactosa: false,
           }).then(({ error }) => { if (error) console.error('addItem:', error) })
         }
       },
@@ -100,6 +102,7 @@ const useStore = create(
             categoria_id: item.categoriaId, emoji: item.emoji,
             icon_url: item.iconUrl || null,
             en_lista: item.enLista || false, tengo: false,
+            sin_lactosa: item.sinLactosa || false,
           }).then(({ error }) => { if (error) console.error('addItemFull:', error) })
         }
       },
@@ -133,6 +136,7 @@ const useStore = create(
           if (changes.categoriaId !== undefined) db.categoria_id = changes.categoriaId
           if (changes.enLista !== undefined) db.en_lista = changes.enLista
           if (changes.tengo !== undefined) db.tengo = changes.tengo
+          if (changes.sinLactosa !== undefined) db.sin_lactosa = changes.sinLactosa
           if (Object.keys(db).length > 0) {
             await supabase.from('items').update(db).eq('id', id)
           }
