@@ -245,6 +245,7 @@ const useStore = create(
         items: state.items,
         recipes: state.recipes,
         platos: state.platos,
+        itemsTachados: state.itemsTachados,
       }),
     }
   )
