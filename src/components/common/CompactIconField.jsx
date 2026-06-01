@@ -23,17 +23,15 @@ async function cropAndResize(file, size = 200) {
   })
 }
 
-// Extrae solo el primer emoji de un string
 function getFirstEmoji(str) {
   if (!str) return ''
-  // Segmenter de emojis si está disponible, fallback a regex
   const emojiRegex = /\p{Emoji_Presentation}|\p{Extended_Pictographic}/u
   const match = str.match(emojiRegex)
-  return match ? match[0] : str.slice(0, 2)
+  return match ? match[0] : ''
 }
 
 export default function CompactIconField({ emoji, iconUrl, onEmojiChange, onIconUrlChange }) {
-  const [showEmojiInput, setShowEmojiInput] = useState(false)
+  const [editing, setEditing] = useState(false)
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef(null)
   const inputRef = useRef(null)
@@ -64,74 +62,84 @@ export default function CompactIconField({ emoji, iconUrl, onEmojiChange, onIcon
     setUploading(false)
   }
 
-  const handleEmojiClick = () => {
+  const startEditing = () => {
     if (!iconUrl) {
-      setShowEmojiInput(true)
-      setTimeout(() => inputRef.current?.focus(), 50)
+      setEditing(true)
+      setTimeout(() => inputRef.current?.focus(), 30)
     }
   }
 
-  const handleEmojiChange = (e) => {
+  const handleEmojiInput = (e) => {
     const val = e.target.value
-    if (!val) {
-      onEmojiChange('📦')
-      return
-    }
-    // Tomar solo el primer emoji del input (reemplazar en vez de acumular)
+    if (!val) return
     const first = getFirstEmoji(val)
-    onEmojiChange(first || val.slice(0, 2))
-    onIconUrlChange('')
+    if (first) {
+      onEmojiChange(first)
+      onIconUrlChange('')
+      setEditing(false)
+    }
   }
 
   return (
     <div>
       <label className="block text-sm font-medium text-text-main mb-1.5">Icono</label>
-      <div className="flex items-center gap-2 p-2 rounded-xl border" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>
+      <div className="flex items-center gap-2">
 
-        {/* Preview — clickable para emoji, solo visual para imagen */}
-        {iconUrl ? (
-          <img src={iconUrl} alt="icono" className="w-9 h-9 rounded-lg object-contain flex-shrink-0" style={{ backgroundColor: 'var(--color-bg-main)' }} />
+        {/* Cuadrado emoji / input emoji */}
+        {editing ? (
+          <input
+            ref={inputRef}
+            className="w-10 h-10 rounded-xl text-center text-2xl focus:outline-none border-2"
+            style={{ borderColor: 'var(--color-primary)', backgroundColor: 'var(--color-bg-main)' }}
+            defaultValue=""
+            onInput={handleEmojiInput}
+            onBlur={() => setEditing(false)}
+            placeholder=""
+          />
         ) : (
           <button
             type="button"
-            onClick={handleEmojiClick}
-            className="w-9 h-9 rounded-lg flex items-center justify-center text-2xl flex-shrink-0 transition-opacity hover:opacity-70 active:scale-95"
-            style={{ backgroundColor: 'var(--color-bg-main)' }}
-            title="Toca para cambiar emoji"
+            onClick={startEditing}
+            disabled={!!iconUrl}
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-2xl border transition-all active:scale-95 disabled:cursor-default"
+            style={{
+              borderColor: 'var(--color-border)',
+              backgroundColor: 'var(--color-bg-main)',
+              opacity: iconUrl ? 0.5 : 1,
+            }}
+            title={iconUrl ? 'Quita la imagen para usar emoji' : 'Toca para cambiar emoji'}
           >
-            {emoji || '📦'}
+            {iconUrl ? (
+              <img src={iconUrl} alt="icono" className="w-full h-full rounded-xl object-contain" />
+            ) : (
+              emoji || '📦'
+            )}
           </button>
         )}
 
-        {/* Emoji input inline — aparece al tocar el emoji */}
-        {showEmojiInput && !iconUrl ? (
-          <input
-            ref={inputRef}
-            className="flex-1 text-xl bg-transparent focus:outline-none"
-            placeholder="Escribe o pega un emoji..."
-            defaultValue=""
-            onChange={handleEmojiChange}
-            onBlur={() => setShowEmojiInput(false)}
-          />
-        ) : (
-          <span className="flex-1 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            {iconUrl ? 'Imagen subida' : (emoji && emoji !== '📦') ? 'Toca el emoji para cambiar' : 'Toca 📦 para cambiar'}
-          </span>
-        )}
+        {/* Botón imagen */}
+        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className="w-10 h-10 rounded-xl flex items-center justify-center text-lg border transition-all active:scale-95 disabled:opacity-50"
+          style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-main)', color: 'var(--color-text-muted)' }}
+          title="Subir imagen"
+        >
+          {uploading ? '⏳' : '🖼️'}
+        </button>
 
-        {/* Acciones */}
-        <div className="flex gap-1 flex-shrink-0">
-          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-          <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors disabled:opacity-50"
-            style={{ backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}
-            title="Subir imagen">{uploading ? '⏳' : '🖼️'}</button>
-          {(iconUrl || (emoji && emoji !== '📦')) && (
-            <button type="button" onClick={() => { onIconUrlChange(''); onEmojiChange('📦'); setShowEmojiInput(false) }}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-red-400"
-              style={{ backgroundColor: 'var(--color-border)' }} title="Quitar">✕</button>
-          )}
-        </div>
+        {/* Botón quitar (solo si hay algo personalizado) */}
+        {(iconUrl || (emoji && emoji !== '📦')) && (
+          <button
+            type="button"
+            onClick={() => { onIconUrlChange(''); onEmojiChange('📦'); setEditing(false) }}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-red-400 transition-all active:scale-95"
+            style={{ backgroundColor: 'var(--color-border)' }}
+            title="Quitar icono"
+          >✕</button>
+        )}
       </div>
     </div>
   )
