@@ -70,10 +70,59 @@ const useStore = create(
           supabase.from('recipes').select('*').eq('user_id', userId).order('created_at'),
           supabase.from('platos').select('*').eq('user_id', userId).order('created_at'),
         ])
+
+        // Si hay error en la query principal de items, no sobreescribir datos locales
+        if (a.error) {
+          console.error('loadFromSupabase items error:', a.error)
+          // Intentar subir los items locales que no están en Supabase
+          const localItems = get().items
+          if (localItems.length > 0) {
+            for (const item of localItems) {
+              await supabase.from('items').upsert({
+                id: item.id, user_id: userId, nombre: item.nombre,
+                categoria_id: item.categoriaId, emoji: item.emoji,
+                icon_url: item.iconUrl || null,
+                en_lista: item.enLista || false, tengo: item.tengo || false,
+                sin_lactosa: item.sinLactosa || false, marca: item.marca || '',
+              }, { onConflict: 'id' })
+            }
+          }
+          return
+        }
+
+        const remoteItems = (a.data || []).map(dbRowToItem)
+        const remoteRecipes = (b.data || []).map(dbRowToReceta)
+        const remotePlatos = (c.data || []).map(dbRowToPlato)
+
+        // Si Supabase devuelve vacío pero hay datos locales: subir los locales primero
+        const localItems = get().items
+        if (remoteItems.length === 0 && localItems.length > 0) {
+          console.log('Supabase vacío pero hay datos locales. Sincronizando...')
+          for (const item of localItems) {
+            await supabase.from('items').upsert({
+              id: item.id, user_id: userId, nombre: item.nombre,
+              categoria_id: item.categoriaId, emoji: item.emoji,
+              icon_url: item.iconUrl || null,
+              en_lista: item.enLista || false, tengo: item.tengo || false,
+              sin_lactosa: item.sinLactosa || false, marca: item.marca || '',
+            }, { onConflict: 'id' }).then(({ error }) => {
+              if (error) console.error('upsert item error:', error)
+            })
+          }
+          // Volver a cargar desde Supabase tras el upsert
+          const reloaded = await supabase.from('items').select('*').eq('user_id', userId).order('created_at')
+          set({
+            items: (reloaded.data || localItems).map ? (reloaded.data || []).map(dbRowToItem) : localItems,
+            recipes: remoteRecipes,
+            platos: remotePlatos,
+          })
+          return
+        }
+
         set({
-          items: (a.data || []).map(dbRowToItem),
-          recipes: (b.data || []).map(dbRowToReceta),
-          platos: (c.data || []).map(dbRowToPlato),
+          items: remoteItems,
+          recipes: remoteRecipes,
+          platos: remotePlatos,
         })
       },
 
